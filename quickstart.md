@@ -39,6 +39,7 @@
     并且完全由你掌控的开发体验。所以一个初始的 zeddy 程序并不会附加任何功能。
 
 ## 编写模块
+### http api
 1. 新建文件 module/user/module.go
 2. 复制以下代码:
     ```go
@@ -142,7 +143,7 @@
     	}
     }
     ```
-5. 再跑起来,然后访问 http://localhost/hello?username=zed
+5. 再跑起来,然后访问 http://localhost:8080/hello?username=zed
     ```bash
     go run .
     ```
