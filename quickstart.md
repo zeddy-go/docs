@@ -86,7 +86,7 @@ go run .
         	"github.com/zeddy-go/zeddy/container"
         	"github.com/zeddy-go/zeddy/contract"
         	"github.com/zeddy-go/zeddy/module"
-        	"template/module/user/iface/http"
+        	"{模块名}/module/user/iface/http"
         )
         
         func NewModule() *Module {
@@ -128,7 +128,7 @@ go run .
     	"github.com/zeddy-go/zeddy/app"
     	"github.com/zeddy-go/zeddy/http/ginx"
     	"log/slog"
-    	"template/module/user"
+    	"{模块名}/module/user"
     )
     
     func main() {
