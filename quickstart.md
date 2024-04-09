@@ -90,5 +90,5 @@
 对于返回值，框架会遍历返回值列表，来决定如何返回响应。
 
 ### 迁移
-框架内置的 github.com/zeddy-go/zeddy/database/migration 模块使用 github.com/golang-migrate/migrate 包实现迁移。
+框架内置的 migration 模块使用 github.com/golang-migrate/migrate 包实现迁移。
 这同样需要在模块入口中注册(module/user/module.go:29)。程序启动后，数据表会自动创建到数据库。
