@@ -31,6 +31,7 @@
 
    > Note: 请在Init方法中绑定实例化方法，在Boot方法中或其他地方使用他们。
 
+   启动服务 `go run .` ，然后访问 http://localhost:8080/hello?username=zed 。
 ## 数据库相关操作
 克隆代码到本地
    ```bash
