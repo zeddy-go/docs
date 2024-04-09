@@ -6,7 +6,7 @@
     ```
 2. 引入框架库
     ```bash
-    go get -u github.com/zeddy-go/zeddy
+    go get -u github.com/zeddy-go/zeddy@latest  //由于代理缓存等影响因素,请确保获取最新版本
     ```
 3. 将下面的代码复制到main.go中
     ```go
@@ -41,25 +41,48 @@
 ## 编写模块
 ### http api
 1. 新建文件 module/user/module.go
-2. 复制以下代码:
     ```go
     package user
-    
+
     import (
-        "github.com/zeddy-go/zeddy/module"
+        "github.com/zeddy-go/zeddy/app"
+        "github.com/zeddy-go/zeddy/container"
+        "github.com/zeddy-go/zeddy/httpx/ginx"
+        "quickstart/module/user/iface/http"
     )
+
     func NewModule() *Module {
-        return &Module{} //模块名称目前不是必须的，所以可以不用自己实例化BaseModule
+        m := &Module{}
+        return m
+    }
+
+    type Module struct {
+        app.IsModule
     }
     
-    type Module struct {
-        module.BaseModule
+    func (m Module) Init() (err error) {
+        err = container.Bind[*http.UserHandler](http.NewUserHandler)
+        if err != nil {
+            return
+        }
+        
+        return
+    }
+    
+    func (m Module) Boot() (err error) {
+        err = container.Invoke(func(r ginx.Router, userHandler *http.UserHandler) {
+            r.GET("/hello", userHandler.Hello)
+        })
+        if err != nil {
+            return
+        }
+    
+        return
     }
     ```
 
-3. 创建api
+2. 创建api
     * 新建文件 module/user/iface/http/user.go
-    * 复制以下代码
         ```go
         package http
 
@@ -83,67 +106,29 @@
             Text string `json:"text"`
         }
         ```
-    * 修改 module/user/module.go 文件
-        ```go
-        package user
-
-        import (
-            "github.com/zeddy-go/zeddy/container"
-            "github.com/zeddy-go/zeddy/contract"
-            "github.com/zeddy-go/zeddy/module"
-            "quickstart/module/user/iface/http"
-        )
-   
-        func NewModule() *Module {
-            m := &Module{}
-            return m
-        }
-   
-        type Module struct {
-            module.BaseModule
-        }
-   
-        func (m Module) Init() (err error) {
-            err = container.Bind[*http.UserHandler](http.NewUserHandler)
-            if err != nil {
-                return
-            }
-            return
-        }
-   
-        func (m Module) Boot() (err error) {
-            err = container.Invoke(func(r contract.IRouter, userHandler *http.UserHandler) {
-                r.GET("/hello", userHandler.Hello)
-            })
-            if err != nil {
-                return
-            }
-            return
-        }
-        ```
-4. 修改 main.go
+3. 修改 main.go
     ```go
     package main
-    
+
     import (
-    	"github.com/zeddy-go/zeddy/app"
-    	"github.com/zeddy-go/zeddy/http/ginx"
-    	"log/slog"
-    	"quickstart/module/user"
+        "github.com/zeddy-go/zeddy/app"
+        "github.com/zeddy-go/zeddy/httpx/ginx"
+        "log/slog"
+        "quickstart/module/user"
     )
     
     func main() {
-    	app.Use(
-    		ginx.NewModule(),
-    		user.NewModule(),
-    	)
-    	err := app.StartAndWait()
-    	if err != nil {
-    		slog.Warn("An error occurred", "error", err)
-    	}
+        app.Use(
+            ginx.NewModule(),
+            user.NewModule(),
+        )
+        err := app.StartAndWait()
+        if err != nil {
+            slog.Warn("An error occurred", "error", err)
+        }
     }
     ```
-5. 再跑起来,然后访问 http://localhost:8080/hello?username=zed
+4. 再跑起来,然后访问 http://localhost:8080/hello?username=zed
     ```bash
     go run .
     ```
