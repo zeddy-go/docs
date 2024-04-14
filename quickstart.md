@@ -141,7 +141,7 @@ git clone -b step3 --single-branch git@github.com:zeddy-go/quickstart.git
 ├── readme.md
 └── user.proto                                     //proto文件
 ```
-在 main.go 文件中，我们添加内置的grpc模块(main.go:21)。
+在 main.go 文件中，我们添加内置的 grpc 模块(main.go:21)。
 而注册我们自己的服务，只需在 module/user/module.go 文件中从容器中拿到已实例化好的 *grpc.Server 即可(module/user/module.go:48,module/user/module.go:66)。
 
 > 这里不得不再次提交依赖注入。您完全可以发给自己的聪明才智，将您的常用代码以`框架模块`的形式固化起来，再一股脑的塞到容器里，随用随取。
@@ -150,3 +150,6 @@ git clone -b step3 --single-branch git@github.com:zeddy-go/quickstart.git
 
 另外，利用已有代码添加grpc还能非常方便的展示代码重用的特性。这个特性不是框架的功劳，而是ddd的。
 您可以看到，在grpc接口实现文件里面，我们重用了 userService 。
+
+> 顺带一提，github.com/zeddy-go/zeddy/errx 包默默的收集了错误栈，您可以使用这样的代码来打印它 fmt.Printf("%#v", err) 。
+> 并且，这些信息在经过grpc传输后也不会丢失。
