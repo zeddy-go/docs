@@ -94,3 +94,59 @@
 ### 迁移
 框架内置的 migration 模块使用 github.com/golang-migrate/migrate 包实现迁移。
 这同样需要在模块入口中注册(module/user/module.go:29)。程序启动后，数据表会自动创建到数据库。
+
+## 添加grpc服务
+克隆代码到本地
+```bash
+git clone -b step3 --single-branch git@github.com:zeddy-go/quickstart.git
+```
+我们在原有的项目的基础上添加grpc服务，这样我们的服务不仅能服务http也能同时服务grpc。
+当然，如果您的项目只需要基于grpc，您完全可以不用理会http相关的代码。
+项目目录结构如下:
+```
+.
+├── conf
+│    ├── config.go
+│    └── config.yaml
+├── docker-compose.yaml
+├── go.mod
+├── go.sum
+├── main.go
+├── module
+│       └── user
+│             ├── domain
+│             │       ├── contract.go
+│             │       ├── svc
+│             │       │     └── user.go
+│             │       └── user.go
+│             ├── iface
+│             │       ├── grpc
+│             │       │     └── user.go            //grpc接口实现
+│             │       └── http
+│             │           ├── payload.go
+│             │           └── user.go
+│             ├── infra
+│             │       ├── migration
+│             │       │     ├── 20240408063653_create_users_table.down.sql
+│             │       │     ├── 20240408063653_create_users_table.up.sql
+│             │       │     └── migration.go
+│             │       ├── model
+│             │       │     └── user.go
+│             │       └── repo
+│             │             └── user.go
+│             └── module.go
+├── pb                                             //pb文件
+│    ├── user_grpc.pb.go
+│    └── user.pb.go
+├── readme.md
+└── user.proto                                     //proto文件
+```
+在 main.go 文件中，我们添加内置的grpc模块(main.go:21)。
+而注册我们自己的服务，只需在 module/user/module.go 文件中从容器中拿到已实例化好的 *grpc.Server 即可(module/user/module.go:48,module/user/module.go:66)。
+
+> 这里不得不再次提交依赖注入。您完全可以发给自己的聪明才智，将您的常用代码以`框架模块`的形式固化起来，再一股脑的塞到容器里，随用随取。
+容器中的每个对象默认为单例模式，得益于常驻内存，已实例化的对象将不再重复实例化，这对执行效率来说是一件好事。
+同时我们也期待您将自己的`框架模块`开源，共同构建一个便捷的，包罗万象的生态环境。(打个不恰当的比方：yes, indeed. it is called Lothric.:joy:)
+
+另外，利用已有代码添加grpc还能非常方便的展示代码重用的特性。这个特性不是框架的功劳，而是ddd的。
+您可以看到，在grpc接口实现文件里面，我们重用了 userService 。
