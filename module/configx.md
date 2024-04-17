@@ -1,7 +1,8 @@
 # configx
 
 框架模块 configx 负责读取配置，供其他模块使用。
-configx 底层使用 github.com/spf13/viper ，confix 将他设置为读取配置后再自动读取环境变量，这样环境变量将会覆盖已有配置项的值。
+configx 使用 github.com/spf13/viper 管理配置，confix 将他设置为读取配置后再自动读取环境变量，这样环境变量将会覆盖已有配置项的值。
+使用配置则是直接使用viper包，减少心智负担。
 
 ## 读取配置
 在快速开始示例中，我们使用embed来将配置文件作为字符串嵌入到程序中(示例项目/conf)，这时相关代码如下：
@@ -19,6 +20,18 @@ app.Use(
 )
 ```
 configx.WithPath 方法接收一个路径。同样的，环境变量也能覆盖已有的配置项。
+
+## 使用配置
+使用配置代码如下：
+```go
+container.Invoke(func(c *viper.Viper) {
+    c.GetString("xxx")
+})
+```
+或者直接使用
+```go
+viper.GetString("xxx")
+```
 
 ## 使用环境变量表示层级关系
 因环境变量名中无法使用 `.` 号，所以我们使用 `__`(两个下划线) 来替换 `.`。
