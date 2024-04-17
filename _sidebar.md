@@ -2,4 +2,6 @@
 - [快速开始](quickstart.md)
 - 概念
     - [框架模块](concepts/module.md)
+- 框架模块
+    - [configx 配置模块](module/configx.md)
 - [FAQ](faq.md)
