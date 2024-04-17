@@ -3,7 +3,7 @@
 ## 框架库中有很多反射逻辑和泛型，执行会很慢吗？
 我们尝试在开发效率和执行效率之间找平衡，这里面必然要面对取舍。
 反射逻辑和泛型是为了让业务代码更简单从而提高我们的开发效率。
-在其他方面我们也在尝试快起来， 下面是我们的转换方法与copier的对比(github.com/zeddy-go/zeddy/mapper/simple_test.go:204):
+在其他方面我们也在尝试快起来， 下面是我们的转换方法与copier的对比(github.com/zeddy-go/zeddy/mapper/simple_test.go:231):
 
 ![result](img/benchmark2.png)
 
