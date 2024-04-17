@@ -25,7 +25,7 @@
    当然，您仍然可以按照您喜欢的方式来做。
 
    我们引用了 ginx 模块和 user 模块。
-   ginx 模块为框架自带模块，用于处理 http 请求，底层使用 gin 。
+   ginx 模块为框架内置模块，用于处理 http 请求，底层使用 gin 。
    > 您完全可以使用任何您喜欢的http库编写自己的http处理模块。或者自己造轮子:100:。
    
    user 模块则是我们自己的业务模块。
@@ -34,7 +34,7 @@
    
    在这里您会注意到 container.Invoke 方法。没错，框架使用了`依赖注入`。
    (我们正尝试在开发效率和执行效率之间找到平衡。)
-   而对象的实例化方法则是在上面的Init方法中进行绑定(module/user/module.go:20)。
+   而对象的实例化方法则是在上面的Init方法中进行绑定(module/user/module.go:21)。
 
    > Note: 请在Init方法中绑定实例化方法，在Boot方法中或其他地方使用他们。
 
@@ -72,14 +72,25 @@
            │         │     └── migration.go
            │         ├── model               //数据模型
            │         │     └── user.go
-           │         └── repo                //仓库
+           │         ├── repo                //仓库
+           │         │     └── user.go
+           │         └── seed                //数据填充
            │               └── user.go
            └── module.go                     //模块入口
    ```
 ### 数据操作相关
 在这个例子中数据模型与领域实体相似，但在实际项目中，一个领域实体也可能由多个数据模型的数据组成。
 业务逻辑只使用领域实体，所以在通过仓库对数据做操作时，仓库会帮我们进行双向转换。
-仓库内置了简单的转换逻辑，但无法满足复杂情况。这时就需要自定义转换逻辑。
+> 仓库内置了简单的转换逻辑，但无法满足复杂情况。这时就需要自定义转换逻辑。
+
+### 数据迁移
+框架内置的 migration 模块使用 github.com/golang-migrate/migrate 包实现迁移。
+这同样需要在模块入口中注册(module/user/module.go:41)。程序启动后，数据表会自动创建到数据库。
+
+### 数据填充
+框架内置了数据填充，原理很简单，就是利用容器执行函数。
+这同样需要在模块入口中注册(module/user/module.go:42)。
+程序启动后，数据会自动填充到数据库。
 
 ### user handler
 在 user handler 中，我们添加了两个方法，一个是创建用户的方法，一个是获取用户信息的方法。
@@ -90,10 +101,6 @@
 框架允许您为每个handler函数设计自己的参数和返回值。
 对于参数，框架会遍历参数列表，查找容器中的对象(依赖注入)或者解析请求的参数。
 对于返回值，框架会遍历返回值列表，来决定如何返回响应。
-
-### 迁移
-框架内置的 migration 模块使用 github.com/golang-migrate/migrate 包实现迁移。
-这同样需要在模块入口中注册(module/user/module.go:29)。程序启动后，数据表会自动创建到数据库。
 
 ## 添加grpc服务
 克隆代码到本地
@@ -132,7 +139,9 @@ git clone -b step3 --single-branch git@github.com:zeddy-go/quickstart.git
 │             │       │     └── migration.go
 │             │       ├── model
 │             │       │     └── user.go
-│             │       └── repo
+│             │       ├── repo
+│             │       │     └── user.go
+│             │       └── seed
 │             │             └── user.go
 │             └── module.go
 ├── pb                                             //pb文件
@@ -142,11 +151,11 @@ git clone -b step3 --single-branch git@github.com:zeddy-go/quickstart.git
 └── user.proto                                     //proto文件
 ```
 在 main.go 文件中，我们添加内置的 grpc 模块(main.go:21)。
-而注册我们自己的服务，只需在 module/user/module.go 文件中从容器中拿到已实例化好的 *grpc.Server 即可(module/user/module.go:48,module/user/module.go:66)。
+而注册我们自己的服务，只需在 module/user/module.go 文件中从容器中拿到已实例化好的 *grpc.Server 即可(module/user/module.go:44,module/user/module.go:65)。
 
-> 这里不得不再次提交依赖注入。您完全可以发给自己的聪明才智，将您的常用代码以`框架模块`的形式固化起来，再一股脑的塞到容器里，随用随取。
+> 这里不得不再次提到依赖注入。您完全可以将您的常用代码以`框架模块`的形式固化起来，再一股脑的塞到容器里，随用随取。
 容器中的每个对象默认为单例模式，得益于常驻内存，已实例化的对象将不再重复实例化，这对执行效率来说是一件好事。
-同时我们也期待您将自己的`框架模块`开源，共同构建一个便捷的，包罗万象的生态环境。(打个不恰当的比方：yes, indeed. it is called Lothric.:joy:)
+同时我们也期待您将自己的`框架模块`开源，共同构建一个便捷的，包罗万象的生态环境。
 
 另外，利用已有代码添加grpc还能非常方便的展示代码重用的特性。这个特性不是框架的功劳，而是ddd的。
 您可以看到，在grpc接口实现文件里面，我们重用了 userService 。
