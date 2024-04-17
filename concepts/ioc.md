@@ -1,8 +1,8 @@
 # IoC/DI容器
-IoC/DI 已经不是一个新概念了，这里不再赘述。
-框架的核心便是一个IoC/DI容器(github.com/zeddy-go/zeddy/container)。
-框架运行时，通过包级函数与包中唯一一个容器实例交互。
-下面是一个例子：
+在示例项目中您能看到 module.go 文件中使用了 github.com/zeddy-go/zeddy/container 包。
+它是框架的核心，框架和其他代码都围绕着它运作。
+IoC/DI 的概念，这里不再赘述。它的用法也是非常简单。
+下面是两个例子：
 ```go
     type A struct{}
 
