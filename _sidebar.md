@@ -1,6 +1,7 @@
 - [首页](/)
 - [快速开始](quickstart.md)
 - 概念
+    - [IoC/DI容器](concepts/ioc.md)
     - [框架模块](concepts/module.md)
 - 框架模块
     - [configx 配置模块](module/configx.md)
